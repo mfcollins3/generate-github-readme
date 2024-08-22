@@ -1,6 +1,9 @@
 {
     "name": "generate-github-readme",
     "image": "mcr.microsoft.com/devcontainers/go:1.23-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
     "customizations": {
         "vscode": {
             "extensions": [
