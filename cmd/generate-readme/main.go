@@ -26,6 +26,27 @@
 
 package main
 
-func main() {
+import (
+	"github.com/spf13/cobra"
+	"log"
+)
 
+var rootCommand = &cobra.Command{
+	Use:     "generate-readme",
+	Version: "0.1.0",
+	Short:   "Generates a profile README for GitHub users",
+	Long: `generate-readme implements a GitHub Action that is used to generate personal
+profiles for GitHub users. The personal profile is created as a README.md
+document that is created in a GitHub repository with the same name as the
+user (ex. mfcollins3/mfcollins3). generate-readme will use a template to
+dynamically generate the personal profile and will include dynamic data from
+different data sources. generate-readme can be used in a GitHub Actions
+workflow on a regular schedule to keep the profile up-to-date.
+`,
+}
+
+func main() {
+	if err := rootCommand.Execute(); err != nil {
+		log.Fatal(err)
+	}
 }
