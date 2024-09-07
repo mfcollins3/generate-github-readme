@@ -18,45 +18,44 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// This program implements a GitHub Action that will generate a GitHub user
-// or organization profile README.md document using a template. This program
-// uses the Go text templating engine to generate the GitHub profile README.md
-// document. Profile authors can inject data from different data files or
-// remote sources to complement their GitHub profiles.
-
 package main
 
 import (
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
+	"html/template"
+	"os"
 )
 
-func init() {
-	viper.SetDefault("template", "README.template")
-	viper.SetDefault("output", "README.md")
+var rootCommand = &cobra.Command{
+	Use:     "generate-readme",
+	Version: "0.1.0",
+	Short:   "Generates a profile README for GitHub users",
+	Long: `generate-readme implements a GitHub Action that is used to generate personal
+profiles for GitHub users. The personal profile is created as a README.md
+document that is created in a GitHub repository with the same name as the
+user (ex. mfcollins3/mfcollins3). generate-readme will use a template to
+dynamically generate the personal profile and will include dynamic data from
+different data sources. generate-readme can be used in a GitHub Actions
+workflow on a regular schedule to keep the profile up-to-date.
+`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		templatePath := viper.GetString("template")
+		template, err := template.ParseFiles(templatePath)
+		if err != nil {
+			return err
+		}
 
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("INPUT")
+		outputPath := viper.GetString("output")
+		outputFile, err := os.Create(outputPath)
+		if err != nil {
+			return err
+		}
 
-	rootCommand.Flags().StringP(
-		"template",
-		"t",
-		"README.template",
-		"The path to the template to use to generate the README",
-	)
-	_ = viper.BindPFlag("template", rootCommand.Flags().Lookup("template"))
+		defer func(outputFile *os.File) {
+			_ = outputFile.Close()
+		}(outputFile)
 
-	rootCommand.Flags().StringP(
-		"output",
-		"o",
-		"README.md",
-		"The path to the README document to generate",
-	)
-	_ = viper.BindPFlag("output", rootCommand.Flags().Lookup("output"))
-}
-
-func main() {
-	if err := rootCommand.Execute(); err != nil {
-		log.Fatal(err)
-	}
+		return template.Execute(outputFile, "Test")
+	},
 }
