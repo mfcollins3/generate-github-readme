@@ -18,16 +18,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package main
+package commands
 
 import (
+	readme_template "github.com/mfcollins3/generate-github-readme/internal/template"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"html/template"
 	"os"
 )
 
-var rootCommand = &cobra.Command{
+var GenerateCommand = &cobra.Command{
 	Use:     "generate-readme",
 	Version: "0.1.0",
 	Short:   "Generates a profile README for GitHub users",
@@ -41,7 +41,7 @@ workflow on a regular schedule to keep the profile up-to-date.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		templatePath := viper.GetString("template")
-		template, err := template.ParseFiles(templatePath)
+		generator, err := readme_template.NewGenerator(templatePath)
 		if err != nil {
 			return err
 		}
@@ -56,6 +56,30 @@ workflow on a regular schedule to keep the profile up-to-date.
 			_ = outputFile.Close()
 		}(outputFile)
 
-		return template.Execute(outputFile, "Test")
+		return generator.Generate(outputFile)
 	},
+}
+
+func init() {
+	GenerateCommand.Flags().StringP(
+		"template",
+		"t",
+		"README.template",
+		"The path to the template to use to generate the README",
+	)
+	_ = viper.BindPFlag(
+		"template",
+		GenerateCommand.Flags().Lookup("template"),
+	)
+
+	GenerateCommand.Flags().StringP(
+		"output",
+		"o",
+		"README.md",
+		"The path to the README document to generate",
+	)
+	_ = viper.BindPFlag(
+		"output",
+		GenerateCommand.Flags().Lookup("output"),
+	)
 }

@@ -1,1 +1,1 @@
-TODO: README template
+{{ template "skills" (ReadSkills "skills.json") }}

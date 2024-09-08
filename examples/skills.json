@@ -1,0 +1,33 @@
+{
+  "categories": [
+    {
+      "title": "Programming Languages",
+      "skills": [
+        {
+          "name": "C",
+          "rating": 4
+        },
+        {
+          "name": "C++",
+          "rating": 4
+        },
+        {
+          "name": "Go",
+          "rating": 5
+        },
+        {
+          "name": "Objective-C",
+          "rating": 5
+        },
+        {
+          "name": "Rust",
+          "rating": 3
+        },
+        {
+          "name": "Swift",
+          "rating": 5
+        }
+      ]
+    }
+  ]
+}

@@ -18,30 +18,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// This program implements a GitHub Action that will generate a GitHub user
-// or organization profile README.md document using a template. This program
-// uses the Go text templating engine to generate the GitHub profile README.md
-// document. Profile authors can inject data from different data files or
-// remote sources to complement their GitHub profiles.
+package skills
 
-package main
-
-import (
-	"github.com/mfcollins3/generate-github-readme/internal/commands"
-	"github.com/spf13/viper"
-	"log"
-)
-
-func init() {
-	viper.SetDefault("template", "README.template")
-	viper.SetDefault("output", "README.md")
-
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("INPUT")
-}
-
-func main() {
-	if err := commands.GenerateCommand.Execute(); err != nil {
-		log.Fatal(err)
-	}
+type Category struct {
+	Title  string  `json:"title"`
+	Skills []Skill `json:"skills,omitempty"`
 }

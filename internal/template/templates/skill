@@ -1,0 +1,13 @@
+{{- $rating := "" -}}
+{{- if eq .Rating 1 -}}
+    {{- $rating = "★☆☆☆☆" -}}
+{{- else if eq .Rating 2 -}}
+    {{- $rating = "★★☆☆☆" -}}
+{{- else if eq .Rating 3 -}}
+    {{- $rating = "★★★☆☆" -}}
+{{- else if eq .Rating 4 -}}
+    {{- $rating = "★★★★☆" -}}
+{{- else -}}
+    {{- $rating = "★★★★★" -}}
+{{- end }}
+- __{{ .Name }}:__ {{ $rating -}}

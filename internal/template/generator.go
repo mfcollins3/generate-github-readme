@@ -18,30 +18,47 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// This program implements a GitHub Action that will generate a GitHub user
-// or organization profile README.md document using a template. This program
-// uses the Go text templating engine to generate the GitHub profile README.md
-// document. Profile authors can inject data from different data files or
-// remote sources to complement their GitHub profiles.
-
-package main
+package template
 
 import (
-	"github.com/mfcollins3/generate-github-readme/internal/commands"
-	"github.com/spf13/viper"
-	"log"
+	"embed"
+	"html/template"
+	"io"
+	"path"
+
+	"github.com/mfcollins3/generate-github-readme/internal/template/functions/skills"
 )
 
-func init() {
-	viper.SetDefault("template", "README.template")
-	viper.SetDefault("output", "README.md")
+//go:embed templates
+var templates embed.FS
 
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("INPUT")
+type Generator struct {
+	t    *template.Template
+	name string
 }
 
-func main() {
-	if err := commands.GenerateCommand.Execute(); err != nil {
-		log.Fatal(err)
+func NewGenerator(templatePath string) (*Generator, error) {
+	templateName := path.Base(templatePath)
+	t, err := template.New(templateName).
+		Funcs(template.FuncMap{
+			"ReadSkills": skills.ReadSkills,
+		}).
+		ParseFS(templates, "templates/*")
+	if err != nil {
+		return nil, err
 	}
+
+	t, err = t.ParseFiles(templatePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Generator{
+		t:    t,
+		name: templateName,
+	}, nil
+}
+
+func (g *Generator) Generate(w io.Writer) error {
+	return g.t.ExecuteTemplate(w, g.name, "Test")
 }

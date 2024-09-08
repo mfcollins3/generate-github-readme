@@ -1,0 +1,6 @@
+{{ range .Categories }}
+### {{ .Title }}
+{{ range .Skills -}}
+{{- template "skill" . -}}
+{{- end }}
+{{ end }}
